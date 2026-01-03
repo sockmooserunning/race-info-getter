@@ -9,17 +9,28 @@ Get started scraping race data in 3 simple steps!
 pip install -r requirements.txt
 ```
 
-**Note:** Make sure you have Chrome browser installed for the Selenium scraper.
+**Note:** Make sure you have Chrome browser installed for the advanced/Selenium scrapers.
 
 ## Step 2: Run
 
-### For Best Results (Recommended):
+### Best Option - Cloudflare Loop Fix (Recommended):
+
+```bash
+python race_scraper_advanced.py
+```
+
+**Why use this?**
+- ✓ Bypasses Cloudflare without getting stuck in loops
+- ✓ Saves your session - faster on subsequent runs
+- ✓ Auto-detects and handles bot protection
+
+### Alternative Option 1 - Manual Verification:
 
 ```bash
 python race_scraper_selenium.py
 ```
 
-### Alternative (May be blocked):
+### Alternative Option 2 - Lightweight (May be blocked):
 
 ```bash
 python race_scraper.py
@@ -56,10 +67,12 @@ Jan 31, 2026   AZT Oracle...    Tucson, AZ
 
 ## Tips
 
+- **Stuck in Cloudflare loop?** Use `race_scraper_advanced.py` - it's specifically designed to avoid this
+- **First run verification:** You may need to verify you're human once, then sessions are saved
 - **Start small:** Try 2-3 pages first to test
 - **Be patient:** Scraping takes time (2-5 seconds per page)
 - **Check dates:** Make sure races exist for your date range on the website
-- **Use Selenium:** If you get 403 errors, always use the Selenium version
+- **Session saved:** After first successful run with advanced scraper, future runs are faster
 
 ## Need Help?
 
