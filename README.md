@@ -23,9 +23,10 @@ This tool provides two scrapers to handle the website's bot protection:
 - **Limitation:** May be blocked by strong bot protection
 
 ### 2. **race_scraper_selenium.py** (Selenium WebDriver) ⭐ **RECOMMENDED**
-- Uses a real Chrome browser to bypass bot detection
-- More reliable for websites with strong anti-bot measures
-- Can run in headless mode (no visible browser window)
+- Uses a real Chrome browser with manual verification step
+- Opens browser window for you to complete human verification (CAPTCHA/Cloudflare)
+- After verification, automatically continues scraping all pages
+- Most reliable for websites with strong anti-bot measures
 - **Best choice for runningintheusa.com**
 
 ## Installation
@@ -50,11 +51,17 @@ Run the Selenium-based scraper:
 python race_scraper_selenium.py
 ```
 
+**How it works:**
+1. You'll be prompted to enter date range and settings
+2. A Chrome browser window will open automatically
+3. You complete any human verification (CAPTCHA/Cloudflare challenge)
+4. Press ENTER when you see the race listings
+5. The scraper automatically collects data from all pages
+
 You'll be prompted to enter:
 - Start date (MM-DD-YYYY format)
 - End date (MM-DD-YYYY format)
 - Maximum pages to scrape (default: 20)
-- Headless mode (whether to show browser)
 - Output filename (optional)
 
 ### Option 2: Requests Scraper
@@ -94,8 +101,10 @@ Output filename (press Enter for auto-generated): my_races.xlsx
 from race_scraper_selenium import SeleniumRaceScraper
 
 # Use context manager to ensure browser is closed
-with SeleniumRaceScraper(headless=True) as scraper:
-    # Scrape races
+# manual_verification=True (default) requires user to complete verification
+# headless=False (default) shows browser for manual verification
+with SeleniumRaceScraper(headless=False, manual_verification=True) as scraper:
+    # Scrape races (will pause for user to complete verification on first page)
     races = scraper.scrape_date_range(
         start_date="01-31-2026",
         end_date="02-01-2026",
@@ -160,6 +169,14 @@ https://runningintheusa.com/classic/list/map/01-31-2026-to-02-01-2026/10k-to-100
 
 ## Troubleshooting
 
+### Bot Detection / "Verifying you are human"
+If you see a verification page (Cloudflare, CAPTCHA):
+- **This is expected!** The website uses bot protection
+- **Solution:** Use the Selenium scraper (recommended) - it has built-in manual verification
+- When the browser opens, complete the verification challenge (click checkbox, solve CAPTCHA)
+- Press ENTER in the terminal once you see the race listings
+- The scraper will then automatically collect all data
+
 ### 403 Forbidden Error (Requests Scraper)
 If you get a 403 error with `race_scraper.py`:
 - **Solution:** Use `race_scraper_selenium.py` instead - it bypasses bot detection
@@ -176,9 +193,10 @@ If you get a 403 error with `race_scraper.py`:
 - This is normal - Selenium loads actual web pages like a real browser
 - Average: 3-5 seconds per page with delays
 
-**Headless mode fails:**
-- Try running with headless=False to see the browser
-- Some systems have issues with headless Chrome
+**Browser doesn't open:**
+- Check that Chrome is installed
+- The scraper runs in visible mode by default (non-headless)
+- You need to see the browser to complete manual verification
 
 ### General Issues
 

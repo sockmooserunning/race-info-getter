@@ -23,12 +23,13 @@ import sys
 class SeleniumRaceScraper:
     """Scrapes race information using Selenium WebDriver"""
 
-    def __init__(self, headless: bool = True):
+    def __init__(self, headless: bool = False, manual_verification: bool = True):
         """
         Initialize the Selenium scraper
 
         Args:
-            headless: Run browser in headless mode (no GUI)
+            headless: Run browser in headless mode (no GUI) - default False for manual verification
+            manual_verification: Pause for manual human verification on first page
         """
         print("Initializing Selenium WebDriver...")
 
@@ -58,6 +59,9 @@ class SeleniumRaceScraper:
         })
         self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 
+        self.manual_verification = manual_verification
+        self.verification_completed = False
+
         print("✓ WebDriver initialized successfully")
 
     def get_random_delay(self, min_delay: float = 2.0, max_delay: float = 5.0) -> float:
@@ -83,6 +87,27 @@ class SeleniumRaceScraper:
 
             # Wait for the page to load
             time.sleep(self.get_random_delay(3, 5))
+
+            # Handle manual verification on first page
+            if self.manual_verification and not self.verification_completed:
+                print("\n" + "=" * 70)
+                print("MANUAL VERIFICATION REQUIRED")
+                print("=" * 70)
+                print("\nA Chrome browser window should have opened.")
+                print("Please complete any human verification challenges in the browser:")
+                print("  - Click checkboxes")
+                print("  - Solve CAPTCHAs")
+                print("  - Wait for verification to complete")
+                print("\nOnce you see the race listings page, the verification is complete.")
+                print("=" * 70)
+
+                input("\nPress ENTER when you have completed the verification and can see race listings...")
+
+                self.verification_completed = True
+                print("\n✓ Verification completed! Continuing with automated scraping...\n")
+
+                # Give a moment for any final page loads
+                time.sleep(2)
 
             # Get the page source and parse with BeautifulSoup
             soup = BeautifulSoup(self.driver.page_source, 'html.parser')
@@ -274,20 +299,19 @@ def main():
     max_pages_input = input("Maximum pages to scrape (default 20): ").strip()
     max_pages = int(max_pages_input) if max_pages_input else 20
 
-    # Ask if headless
-    headless_input = input("Run in headless mode? (Y/n): ").strip().lower()
-    headless = headless_input != 'n'
-
     # Ask for output filename
     output_file = input("Output filename (press Enter for auto-generated): ").strip()
     if not output_file:
         output_file = None
 
     print()
+    print("NOTE: A Chrome browser window will open.")
+    print("You will be asked to complete any human verification challenges.")
+    print()
 
-    # Run scraper using context manager
+    # Run scraper using context manager (non-headless with manual verification by default)
     try:
-        with SeleniumRaceScraper(headless=headless) as scraper:
+        with SeleniumRaceScraper(headless=False, manual_verification=True) as scraper:
             races = scraper.scrape_date_range(start_date, end_date, max_pages)
 
             if races:
