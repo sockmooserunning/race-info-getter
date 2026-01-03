@@ -11,15 +11,23 @@ pip install -r requirements.txt
 
 **Note:** Make sure you have Chrome browser installed for the Selenium scraper.
 
+**macOS Users:** If you get SSL certificate errors, see [INSTALL_MACOS.md](INSTALL_MACOS.md) for the fix!
+
 ## Step 2: Run
 
-### For Best Results (Recommended):
+### Best for Cloudflare Bypass (Most Advanced):
+
+```bash
+python race_scraper_advanced.py
+```
+
+### For Standard Selenium (Recommended):
 
 ```bash
 python race_scraper_selenium.py
 ```
 
-### Alternative (May be blocked):
+### Basic Scraper (May be blocked):
 
 ```bash
 python race_scraper.py
